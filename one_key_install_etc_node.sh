@@ -49,11 +49,8 @@ download_latest_geth(){
 
     # zh-CN---:筛选linux版本
     # en-US---:Filter linux version
-    local DOWNLOAD_LINK=$(echo "$LATEST_RELEASE_INFO" | grep -oP '"browser_download_url": "\K(.*linux.*)(?=")')
-    local DOWNLOAD_LINK_ARRAY=(${DOWNLOAD_LINK// / })
-    echo URLS------$DOWNLOAD_LINK
-    echo URLS------$DOWNLOAD_LINK_ARRAY
-
+    local DOWNLOAD_LINK_ARRAY=$(echo "$LATEST_RELEASE_INFO" | grep -oP '"browser_download_url": "\K(.*linux.*)(?=")')
+    
     local CORE_GETH_DOWNLOAD_URL=""
     for aurl in "${DOWNLOAD_LINK_ARRAY[@]}"; do
         if [[ ! $aurl =~ \.sha256d$ ]] && [[ ! $aurl =~ alltools ]]; then
