@@ -54,39 +54,35 @@ download_latest_geth(){
     for aurl in "${DOWNLOAD_LINK_ARRAY[@]}"; do
         if [[ ! $aurl =~ \.sha256$ ]] && [[ ! $aurl =~ alltools ]]; then
             CORE_GETH_DOWNLOAD_URL=$aurl
-            echo aurl=============$aurl
         fi
     done
-
-    echo CORE_GETH_DOWNLOAD_URL=============$CORE_GETH_DOWNLOAD_URL
 
     file_name=`echo ${CORE_GETH_DOWNLOAD_URL##*'/'}`
     wget --no-check-certificate $CORE_GETH_DOWNLOAD_URL \
     && wait \
     && echo "下载："$CORE_GETH_DOWNLOAD_URL"完成",文件为：$file_name \
 
+    # 检查目标目录是否存在，如果不存在则创建目录
+    if [ ! -d "$CORE_GETH_Dir" ]; then
+        mkdir -p "$CORE_GETH_Dir"
+    fi
 
-    # # 检查目标目录是否存在，如果不存在则创建目录
-    # if [ ! -d "$CORE_GETH_Dir" ]; then
-    #     mkdir -p "$CORE_GETH_Dir"
-    # fi
+    # 检查geth文件是否存在，如果存在则备份
+    if [ -f "$CORE_GETH_Dir/geth" ]; then
+        old_version=`$CORE_GETH_Dir/geth version`
+        echo Old Version With:$old_version
+        current_datetime=$(date +"%Y%m%d%H%M%S")
+        mv "$CORE_GETH_Dir/geth" "$CORE_GETH_Dir/geth.$current_datetime.bak"
+    fi
 
-    # # 检查geth文件是否存在，如果存在则备份
-    # if [ -f "$CORE_GETH_Dir/geth" ]; then
-    #     old_version=`$CORE_GETH_Dir/geth version`
-    #     echo Old Version With:$old_version
-    #     current_datetime=$(date +"%Y%m%d%H%M%S")
-    #     mv "$CORE_GETH_Dir/geth" "$CORE_GETH_Dir/geth.$current_datetime.bak"
-    # fi
+    # 解压缩文件到指定目录
+    unzip "$file_name" -d "$CORE_GETH_Dir"
 
-    # # 解压缩文件到指定目录
-    # unzip "$file_name" -d "$CORE_GETH_Dir"
+    # 删除下载的压缩包和解压后的目录
+    rm -rf "$file_name"
 
-    # # 删除下载的压缩包和解压后的目录
-    # rm -rf "$file_name"
-
-    # # 输出geth版本信息以验证安装成功
-    # $CORE_GETH_Dir/geth version
+    # 输出geth版本信息以验证安装成功
+    $CORE_GETH_Dir/geth version
 }
 
 pre_config(){
