@@ -53,7 +53,7 @@ download_latest_geth(){
     local CORE_GETH_DOWNLOAD_URL=""
     for aurl in "${DOWNLOAD_LINK_ARRAY[@]}"; do
         if [[ ! $aurl =~ \.sha256$ ]] && [[ ! $aurl =~ alltools ]]; then
-            $CORE_GETH_DOWNLOAD_URL=$aurl
+            CORE_GETH_DOWNLOAD_URL=$aurl
             echo aurl=============$aurl
         fi
     done
