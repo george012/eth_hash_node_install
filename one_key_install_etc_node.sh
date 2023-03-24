@@ -92,8 +92,6 @@ pre_config(){
     apt update && wait && apt install unzip zip wget
 }
 
-pre_config && wait && download_latest_geth && wait && create_geth_service && wait && optimize_network
-
 echo "============================ ${produckName} ============================"
 echo "  1、Install core-geth、Create Systemctl Serveice、Optimize Network(安装core-geth、创建Systemctl服务、优化网络)"
 echo "  2、Install core-geth And Create Systemctl Serveice(安装 core-geth 并创建 Systemctl 服务)"
