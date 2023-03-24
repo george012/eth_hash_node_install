@@ -64,7 +64,7 @@ download_latest_geth(){
     done
 
     file_name=`echo ${CORE_GETH_DOWNLOAD_URL##*'/'}`
-    wget wget --no-check-certificate $CORE_GETH_DOWNLOAD_URL \
+    wget --no-check-certificate $CORE_GETH_DOWNLOAD_URL \
     && wait \
     && echo "下载："$CORE_GETH_DOWNLOAD_URL"完成",文件为：$file_name \
 
