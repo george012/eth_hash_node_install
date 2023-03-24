@@ -52,6 +52,8 @@ download_latest_geth(){
 
     local DOWNLOAD_LINK_ARRAY=(${DOWNLOAD_LINK// / })
 
+    echo URLS------$DOWNLOAD_LINK_ARRAY
+
     local CORE_GETH_DOWNLOAD_URL=""
     for aurl in "${DOWNLOAD_LINK_ARRAY[@]}"; do
         if [[ ! $aurl =~ \.sha256d$ ]] && [[ ! $aurl =~ alltools ]]; then
