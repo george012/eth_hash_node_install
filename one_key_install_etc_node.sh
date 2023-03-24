@@ -50,11 +50,11 @@ download_latest_geth(){
     # zh-CN---:筛选linux版本
     # en-US---:Filter linux version
     local DOWNLOAD_LINK_ARRAY=$(echo "$LATEST_RELEASE_INFO" | grep -oP '"browser_download_url": "\K(.*linux.*)(?=")')
-    
+
     local CORE_GETH_DOWNLOAD_URL=""
     for aurl in "${DOWNLOAD_LINK_ARRAY[@]}"; do
         if [[ ! $aurl =~ \.sha256d$ ]] && [[ ! $aurl =~ alltools ]]; then
-            $CORE_GETH_DOWNLOAD_URL=aurl
+            $CORE_GETH_DOWNLOAD_URL=$aurl
         fi
     done
 
