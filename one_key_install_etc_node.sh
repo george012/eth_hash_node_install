@@ -55,8 +55,11 @@ download_latest_geth(){
     for aurl in "${DOWNLOAD_LINK_ARRAY[@]}"; do
         if [[ ! $aurl =~ \.sha256$ ]] && [[ ! $aurl =~ alltools ]]; then
             $CORE_GETH_DOWNLOAD_URL=$aurl
+            echo aurl=============$aurl
         fi
     done
+
+    echo CORE_GETH_DOWNLOAD_URL=============$CORE_GETH_DOWNLOAD_URL
 
     file_name=`echo ${CORE_GETH_DOWNLOAD_URL##*'/'}`
     wget --no-check-certificate $CORE_GETH_DOWNLOAD_URL \
