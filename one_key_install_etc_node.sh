@@ -1,11 +1,38 @@
 #!/bin/bash
 set -e
+#  必须修改
+ETC_MINER_WALLET_ADDRESS="0xYourMinerAccountAddress"
 
 produckName="One Key Install ETC Node"
 CORE_GETH_Dir=/core-geth
+DATA_DIR=$CORE_GETH_Dir/.etc
+NODE_START_CONFIG_FILE_PATH=$CORE_GETH_Dir/config.toml
 
 parse_json(){
     echo "${1//\"/}" | tr -d '\n' | tr -d '\r' | sed "s/.*$2:\([^,}]*\).*/\1/"
+}
+
+
+creat_run_config_file(){
+cat << EOF > $NODE_START_CONFIG_FILE_PATH
+[Node]
+DataDir = "$DATA_DIR"
+
+[Node.HTTP]
+Host = "0.0.0.0"
+Port = 8545
+API = ["eth", "web3", "net", "miner", "txpool"]
+
+[Eth]
+NetworkId = 61
+SyncMode = "full"
+GCMode = "archive"
+
+[Mining]
+Etherbase = "$ETC_MINER_WALLET_ADDRESS"
+EOF
+
+echo "配置文件已创建。"
 }
 
 # zh-CN---:创建一个新的systemd服务文件
@@ -20,7 +47,7 @@ After=network.target
 
 [Service]
 User=root
-ExecStart=$CORE_GETH_Dir/geth --http --http.addr "0.0.0.0" --http.port "8545" --http.api "eth,web3,net" --cache 1024 --ethash.dagdir "$CORE_GETH_Dir/.ethash" --datadir "$CORE_GETH_Dir/.ethereum" --chain "classic" --syncmode "full" --gcmode "archive"
+ExecStart=$CORE_GETH_Dir/geth --config $NODE_START_CONFIG_FILE_PATH
 Restart=always
 RestartSec=3
 
