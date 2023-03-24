@@ -53,9 +53,9 @@ download_latest_geth(){
     for i in "${!DOWNLOAD_LINK_ARRAY[@]}"; do
         aurl=${DOWNLOAD_LINK_ARRAY[i]}
         file_name=`echo ${aurl##*'/'}`
-        wget $aurl
-        wait
-        echo "下载："$aurl"完成",文件为：$file_name
+        wget wget --no-check-certificate $aurl \
+        && wait \
+        && echo "下载："$aurl"完成",文件为：$file_name
     done
 
 
