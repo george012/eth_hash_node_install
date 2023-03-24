@@ -16,7 +16,4 @@
 * [core-geth Documentation](https://etclabscore.github.io/core-geth/)
 
 # `Use`(使用)
-```
-wget --no-check-certificate https://raw.githubusercontent.com/george012/one_key_install_core-geth/master/one_key_install_etc_node.sh && chmod a+x ./one_key_install_etc_node.sh && ./one_key_install_etc_node.sh
-
-```
+```wget --no-check-certificate https://raw.githubusercontent.com/george012/one_key_install_core-geth/master/one_key_install_etc_node.sh && chmod a+x ./one_key_install_etc_node.sh && ./one_key_install_etc_node.sh```
