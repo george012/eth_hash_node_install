@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 produckName="One Key Install ETC Node"
 CORE_GETH_Dir=/core-geth
 
