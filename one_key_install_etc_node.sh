@@ -178,6 +178,9 @@ input_wallet_address(){
 add_path() {
     if [ ! -d "$CORE_GETH_Dir/bin" ]; then
         mkdir -p "$CORE_GETH_Dir/bin"
+    fi
+
+    if [ ! -L "$CORE_GETH_Dir/bin/geth" ]; then
         ln -s $CORE_GETH_Dir/geth $CORE_GETH_Dir/bin/geth
     fi
 
@@ -186,6 +189,7 @@ add_path() {
     else
         echo "export PATH=\$PATH:$CORE_GETH_Dir/bin" | sudo tee -a /etc/environment
     fi
+    source /etc/environment
 }
 
 echo "============================ ${produckName} ============================"
