@@ -186,26 +186,10 @@ echo "======================================================================"
 read -p "$(echo -e "Plase Choose [1-6]：(请选择[1-6]：)")" choose
 case $choose in
 1)
-    pre_config \
-    && wait \
-    && download_latest_geth \
-    && wait \
-    && input_wallet_address \
-    && wait \
-    && create_geth_service \
-    && wait \
-    && optimize_network \
-    && wait \
-    && handle_log_split
+    pre_config && wait && download_latest_geth && wait  && input_wallet_address && wait && create_geth_service && wait && optimize_network && wait && handle_log_split
     ;;
 2)
-    pre_config \
-    && wait \
-    && download_latest_geth \
-    && wait \
-    && input_wallet_address \
-    && wait \
-    && create_geth_service
+    pre_config && wait && download_latest_geth && wait && input_wallet_address && wait && create_geth_service
     ;;
 3)
     pre_config && wait && download_latest_geth
