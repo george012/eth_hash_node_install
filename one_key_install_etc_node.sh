@@ -190,6 +190,8 @@ case $choose in
     && wait \
     && download_latest_geth \
     && wait \
+    && input_wallet_address \
+    && wait \
     && create_geth_service \
     && wait \
     && optimize_network \
@@ -197,7 +199,13 @@ case $choose in
     && handle_log_split
     ;;
 2)
-    pre_config && wait && download_latest_geth && wait && create_geth_service
+    pre_config \
+    && wait \
+    && download_latest_geth \
+    && wait \
+    && input_wallet_address \
+    && wait \
+    && create_geth_service
     ;;
 3)
     pre_config && wait && download_latest_geth
