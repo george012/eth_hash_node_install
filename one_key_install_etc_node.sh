@@ -23,7 +23,7 @@ cat << EOF | sudo tee $NODE_START_CONFIG_FILE_PATH
 [Node]
 DataDir = "$DATA_DIR"
 
-[Node.HTTP]
+[HTTP]
 Host = "0.0.0.0"
 Port = 8545
 API = ["eth", "web3", "net", "miner", "txpool"]
