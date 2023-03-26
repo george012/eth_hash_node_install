@@ -181,12 +181,12 @@ add_path() {
         ln -s $CORE_GETH_Dir/geth $CORE_GETH_Dir/bin/geth
     fi
 
-    if grep -q "geth" /etc/environment; then
-        sudo sed -i "/export PATH=.*geth/c\export PATH=\$PATH:$CORE_GETH_Dir/bin" /etc/environment
+    if grep -q "geth" /etc/profile; then
+        sudo sed -i "/export PATH=.*geth/c\export PATH=\$PATH:$CORE_GETH_Dir/bin" /etc/profile
     else
-        echo "export PATH=\$PATH:$CORE_GETH_Dir/bin" | sudo tee -a /etc/environment
+        echo "export PATH=\$PATH:$CORE_GETH_Dir/bin" | sudo tee -a /etc/profile
     fi
-    source /etc/environment
+    source /etc/profile
 }
 
 echo "============================ ${produckName} ============================"
