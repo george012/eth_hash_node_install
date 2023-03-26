@@ -76,8 +76,7 @@ handle_log_split(){
 # en-US---:Create a new systemd service file
 create_geth_service(){
 sudo rm -rf /etc/systemd/system/core-geth.service
-sudo rm -rf /etc/systemd/system/geth.service
-sudo systemctl daemon-reload
+
 cat << EOF | sudo tee /etc/systemd/system/core-geth.service
 [Service]
 Type=simple
@@ -94,10 +93,9 @@ StandardError=append:$CORE_GETH_LOG_Dir/core-geth.log
 WantedBy=multi-user.target
 EOF
 
-ln -s /etc/systemd/system/core-geth.service /etc/systemd/system/geth.service \
-&& sudo systemctl daemon-reload \
-&& sudo systemctl enable geth \
-&& sudo systemctl status geth
+sudo systemctl daemon-reload \
+&& sudo systemctl enable core-geth.service \
+&& sudo systemctl status core-geth.service
 }
 
 # zh-CN---:优化系统配置以支持更高的并发连接
