@@ -4,39 +4,66 @@ ETC_MINER_WALLET_ADDRESS="0xYourMinerAccountAddress"
 
 produckName="One Key Install ETC Node"
 CORE_GETH_Dir=/core-geth
-DATA_DIR=$CORE_GETH_Dir/.etc
-NODE_START_CONFIG_FILE_PATH=$CORE_GETH_Dir/config.toml
+CORE_GETH_LOG_Dir=$CORE_GETH_Dir/logs
 
 parse_json(){
     echo "${1//\"/}" | tr -d '\n' | tr -d '\r' | sed "s/.*$2:\([^,}]*\).*/\1/"
 }
 
-
-creat_run_config_file(){
-input_wallet_address
-if [ -f "$NODE_START_CONFIG_FILE_PATH" ]; then
-    current_datetime=$(date +"%Y%m%d%H%M%S")
-    mv "$NODE_START_CONFIG_FILE_PATH" "$NODE_START_CONFIG_FILE_PATH.$current_datetime.bak"
-fi
-
-cat << EOF | sudo tee $NODE_START_CONFIG_FILE_PATH
-[Node]
-DataDir = "$DATA_DIR"
-
-[HTTP]
-Host = "0.0.0.0"
-Port = 8545
-API = ["eth", "web3", "net", "miner", "txpool"]
-
-[Eth]
-NetworkId = 61
-SyncMode = "full"
-
-[Mining]
-Etherbase = "$ETC_MINER_WALLET_ADDRESS"
+# # core-geth_logrotate config
+create_logrotate_config(){
+cat << EOF | sudo tee /etc/logrotate.d/core-geth
+$CORE_GETH_LOG_Dir/core-geth.log {
+    hourly
+    rotate 720
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+}
 EOF
+}
 
-echo "The profile has been created.(配置文件已创建。)"
+# core-geth_logrotate systemd
+create_core-geth_logrotate_service(){
+cat << EOF | sudo tee /etc/systemd/system/core-geth_logrotate.service
+[Unit]
+Description=Logrotate for Core-Geth
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/logrotate /etc/logrotate.d/core-geth
+EOF
+}
+
+# core-geth_logrotate systemd timer
+create_core-geth_logrotate_service_timer(){
+cat << EOF | sudo tee /etc/systemd/system/core-geth_logrotate.timer
+[Unit]
+Description=Run logrotate for Core-Geth every 5 minutes
+
+[Timer]
+OnCalendar=*:0/5
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+}
+
+handle_log_split(){
+    create_logrotate_config \
+    && wait \
+    && create_core-geth_logrotate_service \
+    && wait \
+    && create_core-geth_logrotate_service_timer \
+    && wait \
+    && sudo systemctl daemon-reload \
+    && wait \
+    && sudo systemctl enable core-geth_logrotate.timer \
+    && wait \
+    && sudo systemctl start core-geth_logrotate.timer
 }
 
 # zh-CN---:创建一个新的systemd服务文件
@@ -45,15 +72,16 @@ create_geth_service(){
 sudo rm -rf /etc/systemd/system/core-geth.service
 sudo systemctl daemon-reload
 cat << EOF | sudo tee /etc/systemd/system/core-geth.service
-[Unit]
-Description=Core-Geth Ethereum node
-After=network.target
-
 [Service]
+Type=simple
 User=root
-ExecStart=$CORE_GETH_Dir/geth --config $NODE_START_CONFIG_FILE_PATH
-Restart=always
-RestartSec=3
+Restart=on-failure
+RestartSec=5s
+ExecStart=$CORE_GETH_Dir/geth --classic --http --http.addr 0.0.0.0 --http.port 8545 --http.api eth,web3,net,miner,txpool --ws --ws.addr 0.0.0.0 --ws.port 8546 --ws.api eth,web3,net,miner,txpool --syncmode full --miner.etherbase $ETC_MINER_WALLET_ADDRESS
+ExecStop=/bin/kill -TERM '$MAINPID'
+WorkingDirectory=$CORE_GETH_Dir
+StandardOutput=append:$CORE_GETH_LOG_Dir/core-geth.log
+StandardError=append:$CORE_GETH_LOG_Dir/core-geth.log
 
 [Install]
 WantedBy=multi-user.target
@@ -112,7 +140,7 @@ download_latest_geth(){
 }
 
 pre_config(){
-    apt update && wait && apt install unzip zip wget
+    apt update && wait && apt install unzip zip wget logrotate
 }
 
 is_valid_etc_wallet_address() {
@@ -145,14 +173,22 @@ echo "============== 执行此脚本会停止当前 core-geth服务，请谨慎�
 echo "  1、Install core-geth、Create Config File、Create Systemctl Serveice、Optimize Network(安装core-geth、创建Systemctl服务、优化网络)"
 echo "  2、Install core-geth And Create Systemctl Serveice(安装 core-geth 并创建 Systemctl 服务)"
 echo "  3、Just Only Download core-geth(只下载 core-geth)"
-echo "  4、Just Only Creat Run Config File(生成默认启动配置文件)"
-echo "  5、Just Only Create core-geth Systemctl Serveice(只创建 core-geth Systemctl 服务)"
-echo "  6、Just Only Optimize Network(只优化网络)"
+echo "  4、Just Only Create core-geth Systemctl Serveice(只创建 core-geth Systemctl 服务)"
+echo "  5、Just Only Optimize Network(只优化网络)"
+echo "  6、Handle Log Split (处理日志分片)"
 echo "======================================================================"
 read -p "$(echo -e "Plase Choose [1-6]：(请选择[1-6]：)")" choose
 case $choose in
 1)
-    pre_config && wait && download_latest_geth && wait && create_geth_service && wait && creat_run_config_file && wait && optimize_network
+    pre_config \
+    && wait \
+    && download_latest_geth \
+    && wait \
+    && create_geth_service \
+    && wait \
+    && optimize_network \
+    && wait \
+    && handle_log_split
     ;;
 2)
     pre_config && wait && download_latest_geth && wait && create_geth_service
@@ -161,13 +197,13 @@ case $choose in
     pre_config && wait && download_latest_geth
     ;;
 4)
-    creat_run_config_file
-    ;;
-5)
     create_geth_service
     ;;
-6)
+5)
     optimize_network
+    ;;
+6)
+    handle_log_split
     ;;
 *)
     echo "Input Error，Plase Again(输入错误，请重试)"
