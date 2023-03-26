@@ -12,6 +12,8 @@ parse_json(){
 
 # # core-geth_logrotate config
 create_logrotate_config(){
+sudo rm -rf /etc/logrotate.d/core-geth
+
 cat << EOF | sudo tee /etc/logrotate.d/core-geth
 $CORE_GETH_LOG_Dir/core-geth.log {
     hourly
@@ -27,6 +29,8 @@ EOF
 
 # core-geth_logrotate systemd
 create_core-geth_logrotate_service(){
+sudo rm -rf /etc/systemd/system/core-geth_logrotate.service
+
 cat << EOF | sudo tee /etc/systemd/system/core-geth_logrotate.service
 [Unit]
 Description=Logrotate for Core-Geth
@@ -39,6 +43,8 @@ EOF
 
 # core-geth_logrotate systemd timer
 create_core-geth_logrotate_service_timer(){
+sudo rm -rf /etc/systemd/system/core-geth_logrotate.timer
+
 cat << EOF | sudo tee /etc/systemd/system/core-geth_logrotate.timer
 [Unit]
 Description=Run logrotate for Core-Geth every 5 minutes
