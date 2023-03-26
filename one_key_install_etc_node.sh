@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-#  必须修改
 ETC_MINER_WALLET_ADDRESS="0xYourMinerAccountAddress"
 
 produckName="One Key Install ETC Node"
@@ -38,6 +37,8 @@ echo "配置文件已创建。"
 # zh-CN---:创建一个新的systemd服务文件
 # en-US---:Create a new systemd service file
 create_geth_service(){
+input_wallet_address
+
 sudo rm -rf /etc/systemd/system/core-geth.service
 sudo systemctl daemon-reload
 cat << EOF | sudo tee /etc/systemd/system/core-geth.service
@@ -116,17 +117,44 @@ pre_config(){
     apt update && wait && apt install unzip zip wget
 }
 
+is_valid_etc_wallet_address() {
+  local input_address="$1"
+  if [[ "$input_address" =~ ^0x[a-fA-F0-9]{40}$ ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+input_wallet_address(){
+    while true; do
+        echo "====Please enter the ETC wallet address, if you do not want to configure, just press Enter===="
+        echo "============================ 请输入ETC钱包地址,如果不想配置直接回车 ============================="
+        read -p "Please Input: " input_string
+        if [ -z "$input_string" ]; then
+            break
+        elif is_valid_etc_wallet_address "$input_string"; then
+            ETC_MINER_WALLET_ADDRESS="$input_string"
+            break
+        else
+            echo "Invalid ETC wallet address. Please try again.（ETC 钱包地址无效。 请再试一次。）"
+        fi
+    done
+}
+
 echo "============================ ${produckName} ============================"
-echo "  1、Install core-geth、Create Systemctl Serveice、Optimize Network(安装core-geth、创建Systemctl服务、优化网络)"
+echo "============== 执行此脚本会停止当前 core-geth服务，请谨慎操作 =============="
+echo "  1、Install core-geth、Create Config File、Create Systemctl Serveice、Optimize Network(安装core-geth、创建Systemctl服务、优化网络)"
 echo "  2、Install core-geth And Create Systemctl Serveice(安装 core-geth 并创建 Systemctl 服务)"
 echo "  3、Just Only Download core-geth(只下载 core-geth)"
-echo "  4、Just Only Create core-geth Systemctl Serveice(只创建 core-geth Systemctl 服务)"
-echo "  5、Just Only Optimize Network(只优化网络)"
+echo "  4、Just Only Creat Run Config File(生成默认启动配置文件)"
+echo "  5、Just Only Create core-geth Systemctl Serveice(只创建 core-geth Systemctl 服务)"
+echo "  6、Just Only Optimize Network(只优化网络)"
 echo "======================================================================"
-read -p "$(echo -e "Plase Choose [1-5]：(请选择[1-5]：)")" choose
+read -p "$(echo -e "Plase Choose [1-6]：(请选择[1-6]：)")" choose
 case $choose in
 1)
-    pre_config && wait && download_latest_geth && wait && create_geth_service && wait && optimize_network
+    pre_config && wait && download_latest_geth && wait && create_geth_service && wait && creat_run_config_file && wait && optimize_network
     ;;
 2)
     pre_config && wait && download_latest_geth && wait && create_geth_service
@@ -135,9 +163,12 @@ case $choose in
     pre_config && wait && download_latest_geth
     ;;
 4)
-    create_geth_service
+    creat_run_config_file
     ;;
 5)
+    create_geth_service
+    ;;
+6)
     optimize_network
     ;;
 *)
