@@ -1,5 +1,8 @@
 #!/bin/bash
 set -e
+
+SCRIPT_NAME=$(basename $0)
+
 ETC_MINER_WALLET_ADDRESS="0xYourMinerAccountAddress"
 
 produckName="One Key Install ETC Node"
@@ -203,7 +206,7 @@ echo "======================================================================"
 read -p "$(echo -e "Plase Choose [1-7]：(请选择[1-7]：)")" choose
 case $choose in
 1)
-    pre_config && wait && download_latest_geth && wait  && input_wallet_address && wait && create_geth_service && wait && handle_log_split && wait && add_path && wait && optimize_network && wait && rm -rf 
+    pre_config && wait && download_latest_geth && wait  && input_wallet_address && wait && create_geth_service && wait && handle_log_split && wait && add_path && wait && optimize_network && wait && rm -rf $SCRIPT_NAME
     ;;
 2)
     pre_config && wait && download_latest_geth && wait && input_wallet_address && wait && create_geth_service
