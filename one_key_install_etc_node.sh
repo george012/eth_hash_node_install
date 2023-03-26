@@ -75,7 +75,8 @@ handle_log_split(){
 # zh-CN---:创建一个新的systemd服务文件
 # en-US---:Create a new systemd service file
 create_geth_service(){
-sudo rm -rf /etc/systemd/system/core-geth.service
+sudo systemctl disable core-geth.service \
+&& sudo rm -rf /etc/systemd/system/core-geth.service
 
 cat << EOF | sudo tee /etc/systemd/system/core-geth.service
 [Service]
