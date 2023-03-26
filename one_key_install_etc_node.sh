@@ -37,7 +37,7 @@ GCMode = "archive"
 Etherbase = "$ETC_MINER_WALLET_ADDRESS"
 EOF
 
-echo "配置文件已创建。"
+echo "The profile has been created.(配置文件已创建。)"
 }
 
 # zh-CN---:创建一个新的systemd服务文件
@@ -89,17 +89,13 @@ download_latest_geth(){
         fi
     done
 
-    file_name=`echo ${CORE_GETH_DOWNLOAD_URL##*'/'}`
-    wget --no-check-certificate $CORE_GETH_DOWNLOAD_URL \
-    && wait \
-    && echo "下载："$CORE_GETH_DOWNLOAD_URL"完成",文件为：$file_name \
-
-    # 检查目标目录是否存在，如果不存在则创建目录
+    # zh-CN---:检查目标目录是否存在，如果不存在则创建目录
+    # en-US---:Check if the target directory exists and create the directory if not
     if [ ! -d "$CORE_GETH_Dir" ]; then
         mkdir -p "$CORE_GETH_Dir"
     fi
-
-    # 检查geth文件是否存在，如果存在则备份
+    # zh-CN---:检查目标目录是否存在，如果不存在则创建目录
+    # en-US---:Check if the geth file exists and back it up if it does
     if [ -f "$CORE_GETH_Dir/geth" ]; then
         old_version=`$CORE_GETH_Dir/geth version`
         echo Old Version With:$old_version
@@ -107,14 +103,13 @@ download_latest_geth(){
         mv "$CORE_GETH_Dir/geth" "$CORE_GETH_Dir/geth.$current_datetime.bak"
     fi
 
-    # 解压缩文件到指定目录
-    unzip "$file_name" -d "$CORE_GETH_Dir"
-
-    # 删除下载的压缩包和解压后的目录
-    rm -rf "$file_name"
-
-    # 输出geth版本信息以验证安装成功
-    $CORE_GETH_Dir/geth version
+    file_name=`echo ${CORE_GETH_DOWNLOAD_URL##*'/'}`
+    wget --no-check-certificate $CORE_GETH_DOWNLOAD_URL \
+    && wait \
+    && echo "Download(下载)："$CORE_GETH_DOWNLOAD_URL"Complate(完成)",FielWith：$file_name \
+    && unzip "$file_name" -d "$CORE_GETH_Dir" \
+    && rm -rf "$file_name" \
+    && $CORE_GETH_Dir/geth version
 }
 
 pre_config(){
@@ -134,7 +129,7 @@ input_wallet_address(){
     while true; do
         echo "====Please enter the ETC wallet address, if you do not want to configure, just press Enter===="
         echo "============================ 请输入ETC钱包地址,如果不想配置直接回车 ============================="
-        read -p "Please Input: " input_string
+        read -p "Please Input(请输入): " input_string
         if [ -z "$input_string" ]; then
             break
         elif is_valid_etc_wallet_address "$input_string"; then
