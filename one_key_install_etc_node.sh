@@ -59,7 +59,8 @@ EOF
 }
 
 handle_log_split(){
-    create_logrotate_config \
+    mkdir -p $CORE_GETH_LOG_Dir \
+    && create_logrotate_config \
     && wait \
     && create_core-geth_logrotate_service \
     && wait \
