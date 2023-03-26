@@ -101,7 +101,6 @@ sudo systemctl daemon-reload \
 # zh-CN---:优化系统配置以支持更高的并发连接
 # en-US---:Optimize system configuration to support higher concurrent connections
 optimize_network(){
-    
     wget --no-check-certificate https://raw.githubusercontent.com/george012/gt_script/master/optimize_network.sh && chmod a+x ./optimize_network.sh && ./optimize_network.sh
 }
 
@@ -203,7 +202,7 @@ echo "======================================================================"
 read -p "$(echo -e "Plase Choose [1-7]：(请选择[1-7]：)")" choose
 case $choose in
 1)
-    pre_config && wait && download_latest_geth && wait  && input_wallet_address && wait && create_geth_service && wait && optimize_network && wait && handle_log_split && wait && add_path
+    pre_config && wait && download_latest_geth && wait  && input_wallet_address && wait && create_geth_service && wait && handle_log_split && wait && add_path && wait && optimize_network
     ;;
 2)
     pre_config && wait && download_latest_geth && wait && input_wallet_address && wait && create_geth_service
