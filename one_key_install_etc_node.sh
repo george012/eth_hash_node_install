@@ -31,7 +31,6 @@ API = ["eth", "web3", "net", "miner", "txpool"]
 [Eth]
 NetworkId = 61
 SyncMode = "full"
-GCMode = "archive"
 
 [Mining]
 Etherbase = "$ETC_MINER_WALLET_ADDRESS"
