@@ -95,8 +95,7 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl daemon-reload \
-&& sudo systemctl enable core-geth.service \
-&& sudo systemctl status core-geth.service
+&& sudo systemctl enable core-geth.service
 }
 
 # zh-CN---:优化系统配置以支持更高的并发连接
