@@ -76,6 +76,7 @@ handle_log_split(){
 # en-US---:Create a new systemd service file
 create_geth_service(){
 sudo rm -rf /etc/systemd/system/core-geth.service
+sudo rm -rf /etc/systemd/system/geth.service
 sudo systemctl daemon-reload
 cat << EOF | sudo tee /etc/systemd/system/core-geth.service
 [Service]
@@ -174,6 +175,19 @@ input_wallet_address(){
     done
 }
 
+add_path() {
+    if [ ! -d "$CORE_GETH_Dir/bin" ]; then
+        mkdir -p "$CORE_GETH_Dir/bin"
+        ln -s $CORE_GETH_Dir/geth $CORE_GETH_Dir/bin/geth
+    fi
+
+    if grep -q "geth" /etc/environment; then
+        sudo sed -i "/export PATH=.*geth/c\export PATH=\$PATH:$CORE_GETH_Dir/bin" /etc/environment
+    else
+        echo "export PATH=\$PATH:$CORE_GETH_Dir/bin" | sudo tee -a /etc/environment
+    fi
+}
+
 echo "============================ ${produckName} ============================"
 echo "============== 执行此脚本会停止当前 core-geth服务，请谨慎操作 =============="
 echo "  1、Install core-geth、Create Config File、Create Systemctl Serveice、Optimize Network(安装core-geth、创建Systemctl服务、优化网络)"
@@ -182,11 +196,12 @@ echo "  3、Just Only Download core-geth(只下载 core-geth)"
 echo "  4、Just Only Create core-geth Systemctl Serveice(只创建 core-geth Systemctl 服务)"
 echo "  5、Just Only Optimize Network(只优化网络)"
 echo "  6、Handle Log Split (处理日志分片)"
+echo "  7、Add geth to PATH (添加geth环境变量)"
 echo "======================================================================"
-read -p "$(echo -e "Plase Choose [1-6]：(请选择[1-6]：)")" choose
+read -p "$(echo -e "Plase Choose [1-7]：(请选择[1-7]：)")" choose
 case $choose in
 1)
-    pre_config && wait && download_latest_geth && wait  && input_wallet_address && wait && create_geth_service && wait && optimize_network && wait && handle_log_split
+    pre_config && wait && download_latest_geth && wait  && input_wallet_address && wait && create_geth_service && wait && optimize_network && wait && handle_log_split && wait && add_path
     ;;
 2)
     pre_config && wait && download_latest_geth && wait && input_wallet_address && wait && create_geth_service
@@ -202,6 +217,9 @@ case $choose in
     ;;
 6)
     handle_log_split
+    ;;
+6)
+    add_path
     ;;
 *)
     echo "Input Error，Plase Again(输入错误，请重试)"
