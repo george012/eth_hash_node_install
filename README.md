@@ -9,8 +9,9 @@
 <!-- /TOC -->
 
 # 1. `summary`(简介)
-* This is a script to install the latest version of the Ethereum Classic node with one click
-* `zh-CN--->`这是一个一键安装以太经典节点最新版本的脚本
+* This script is for one-click installation and configuration of Ethereum Classic (ETC) nodes on Linux systems. This script can help users easily install and configure ETC nodes, saving the trouble of manually executing multiple commands. Just run the script according to the prompts and select the corresponding operation to complete the construction of the ETC node
+
+* `zh-CN--->`这个脚本是用于在Linux系统上一键安装和配置Ethereum Classic（ETC）节点的。这个脚本可以帮助用户轻松地安装和配置ETC节点，省去了手动执行多个命令的麻烦。只需根据提示运行脚本，选择相应的操作，即可完成ETC节点的搭建。
 
 # 2. `Functions`(功能)
 - [x] Automatically download the latest version of core-geth(自动下载最新版本core-geth)
