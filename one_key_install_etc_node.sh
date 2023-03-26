@@ -13,7 +13,13 @@ parse_json(){
 
 
 creat_run_config_file(){
-cat << EOF > $NODE_START_CONFIG_FILE_PATH
+input_wallet_address
+if [ -f "$NODE_START_CONFIG_FILE_PATH" ]; then
+    current_datetime=$(date +"%Y%m%d%H%M%S")
+    mv "$NODE_START_CONFIG_FILE_PATH" "$NODE_START_CONFIG_FILE_PATH.$current_datetime.bak"
+fi
+
+cat << EOF | sudo tee $NODE_START_CONFIG_FILE_PATH
 [Node]
 DataDir = "$DATA_DIR"
 
@@ -37,8 +43,6 @@ echo "配置文件已创建。"
 # zh-CN---:创建一个新的systemd服务文件
 # en-US---:Create a new systemd service file
 create_geth_service(){
-input_wallet_address
-
 sudo rm -rf /etc/systemd/system/core-geth.service
 sudo systemctl daemon-reload
 cat << EOF | sudo tee /etc/systemd/system/core-geth.service
