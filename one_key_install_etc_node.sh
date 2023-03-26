@@ -5,7 +5,7 @@ ETC_MINER_WALLET_ADDRESS="0xYourMinerAccountAddress"
 produckName="One Key Install ETC Node"
 CORE_GETH_Dir=/core-geth
 CORE_GETH_LOG_Dir=$CORE_GETH_Dir/logs
-
+CORE_GETH_DATA_Dir=$CORE_GETH_Dir/datas
 parse_json(){
     echo "${1//\"/}" | tr -d '\n' | tr -d '\r' | sed "s/.*$2:\([^,}]*\).*/\1/"
 }
@@ -85,7 +85,7 @@ Type=simple
 User=root
 Restart=on-failure
 RestartSec=5s
-ExecStart=$CORE_GETH_Dir/geth --classic --http --http.addr 0.0.0.0 --http.port 8545 --http.api eth,web3,net,miner,txpool --ws --ws.addr 0.0.0.0 --ws.port 8546 --ws.api eth,web3,net,miner,txpool --syncmode full --miner.etherbase $ETC_MINER_WALLET_ADDRESS
+ExecStart=$CORE_GETH_Dir/geth --classic --datadir $CORE_GETH_DATA_Dir --http --http.addr 0.0.0.0 --http.port 8545 --http.api eth,web3,net,miner,txpool --ws --ws.addr 0.0.0.0 --ws.port 8546 --ws.api eth,web3,net,miner,txpool --syncmode full --miner.etherbase $ETC_MINER_WALLET_ADDRESS
 ExecStop=/bin/kill -TERM '$MAINPID'
 WorkingDirectory=$CORE_GETH_Dir
 StandardOutput=append:$CORE_GETH_LOG_Dir/core-geth.log
@@ -203,7 +203,7 @@ echo "======================================================================"
 read -p "$(echo -e "Plase Choose [1-7]：(请选择[1-7]：)")" choose
 case $choose in
 1)
-    pre_config && wait && download_latest_geth && wait  && input_wallet_address && wait && create_geth_service && wait && handle_log_split && wait && add_path && wait && optimize_network
+    pre_config && wait && download_latest_geth && wait  && input_wallet_address && wait && create_geth_service && wait && handle_log_split && wait && add_path && wait && optimize_network && wait && rm -rf 
     ;;
 2)
     pre_config && wait && download_latest_geth && wait && input_wallet_address && wait && create_geth_service
