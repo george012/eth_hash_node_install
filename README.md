@@ -25,6 +25,7 @@
 - [x] menu processing(菜单化)
 - [x] High concurrent network optimization `default 51200`(高并发网络优化`默认51200`)
 - [x] Run logrotate for Core-Geth every 5 minutes `logrotate splits every 1 hour and saves for 30 days`(每5分钟进行一次日志分片服务调用`日志分片是按照每1小时分片一次，保留30天`)
+- [x] Custom Setting Node ID Name (自定义节点名字)
 
 # 4. `core-geth Infos` (core-geth 相关信息)
 * [core-geth github](https://github.com/etclabscore/core-geth)

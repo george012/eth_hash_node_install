@@ -2,7 +2,7 @@
 set -e
 
 SCRIPT_NAME=$(basename $0)
-
+IDENTITY_NAME="MyETCNode"
 ETC_MINER_WALLET_ADDRESS="0xYourMinerAccountAddress"
 
 produckName="One Key Install ETC Node"
@@ -88,7 +88,7 @@ Type=simple
 User=root
 Restart=on-failure
 RestartSec=5s
-ExecStart=$CORE_GETH_Dir/geth --classic --datadir $CORE_GETH_DATA_Dir --http --http.addr 0.0.0.0 --http.port 8545 --http.api eth,web3,net,miner,txpool --ws --ws.addr 0.0.0.0 --ws.port 8546 --ws.api eth,web3,net,miner,txpool --syncmode full --miner.etherbase $ETC_MINER_WALLET_ADDRESS
+ExecStart=$CORE_GETH_Dir/geth --identity "$IDENTITY_NAME" --classic --datadir $CORE_GETH_DATA_Dir --http --http.addr 0.0.0.0 --http.port 8545 --http.api eth,web3,net,miner,txpool --ws --ws.addr 0.0.0.0 --ws.port 8546 --ws.api eth,web3,net,miner,txpool --syncmode full --miner.etherbase $ETC_MINER_WALLET_ADDRESS
 ExecStop=/bin/kill -TERM '$MAINPID'
 WorkingDirectory=$CORE_GETH_Dir
 StandardOutput=append:$CORE_GETH_LOG_Dir/core-geth.log
@@ -193,6 +193,13 @@ add_path() {
     source /etc/profile
 }
 
+setting_custom_node_id_name(){
+        echo "====Please enter the ETC id name===="
+        echo "============================ 请输入ETC自定义节点名称 ============================="
+        read -p "Please Input Custom ID Name(请输入自定义节点名称): " input_name
+        IDENTITY_NAME="$input_name"
+}
+
 echo "============================ ${produckName} ============================"
 echo "============== 执行此脚本会停止当前 core-geth服务，请谨慎操作 =============="
 echo "  1、Install core-geth、Create Config File、Create Systemctl Serveice、Optimize Network(安装core-geth、创建Systemctl服务、优化网络)"
@@ -206,7 +213,7 @@ echo "======================================================================"
 read -p "$(echo -e "Plase Choose [1-7]：(请选择[1-7]：)")" choose
 case $choose in
 1)
-    pre_config && wait && download_latest_geth && wait  && input_wallet_address && wait && create_geth_service && wait && handle_log_split && wait && add_path && wait && optimize_network && wait && rm -rf $SCRIPT_NAME
+    pre_config && wait && download_latest_geth && wait  && input_wallet_address && wait && setting_custom_node_id_name && wait && create_geth_service && wait && handle_log_split && wait && add_path && wait && optimize_network && wait && rm -rf $SCRIPT_NAME
     ;;
 2)
     pre_config && wait && download_latest_geth && wait && input_wallet_address && wait && create_geth_service
