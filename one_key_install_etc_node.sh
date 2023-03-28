@@ -9,6 +9,8 @@ produckName="One Key Install ETC Node"
 CORE_GETH_Dir=/core-geth
 CORE_GETH_LOG_Dir=$CORE_GETH_Dir/logs
 CORE_GETH_DATA_Dir=$CORE_GETH_Dir/datas
+CORE_GETH_DAG_Dir=$CORE_GETH_DATA_Dir/dag
+
 parse_json(){
     echo "${1//\"/}" | tr -d '\n' | tr -d '\r' | sed "s/.*$2:\([^,}]*\).*/\1/"
 }
@@ -88,7 +90,7 @@ Type=simple
 User=root
 Restart=on-failure
 RestartSec=5s
-ExecStart=$CORE_GETH_Dir/geth -4 --identity "$IDENTITY_NAME" --classic --datadir $CORE_GETH_DATA_Dir --http --http.addr 0.0.0.0 --http.port 8545 --http.api eth,web3,net,miner,txpool --ws --ws.addr 0.0.0.0 --ws.port 8546 --ws.api eth,web3,net,miner,txpool --syncmode full --miner.etherbase $ETC_MINER_WALLET_ADDRESS
+ExecStart=$CORE_GETH_Dir/geth --identity "$IDENTITY_NAME" --classic --datadir $CORE_GETH_DATA_Dir --ethash.dagdir $CORE_GETH_DAG_Dir --http --http.addr 0.0.0.0 --http.port 8545 --http.api eth,web3,net,miner,txpool --ws --ws.addr 0.0.0.0 --ws.port 8546 --ws.api eth,web3,net,miner,txpool --syncmode full --miner.etherbase $ETC_MINER_WALLET_ADDRESS
 ExecStop=/bin/kill -TERM '$MAINPID'
 WorkingDirectory=$CORE_GETH_Dir
 StandardOutput=append:$CORE_GETH_LOG_Dir/core-geth.log
