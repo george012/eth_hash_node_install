@@ -90,7 +90,7 @@ Type=simple
 User=root
 Restart=on-failure
 RestartSec=5s
-ExecStart=$CORE_GETH_Dir/geth --identity "$IDENTITY_NAME" --classic --datadir $CORE_GETH_DATA_Dir --ethash.dagdir $CORE_GETH_DAG_Dir --http --http.addr 0.0.0.0 --http.port 8545 --http.api eth,web3,net,miner,txpool --syncmode full --mine --miner.threads=2 --miner.etherbase $ETC_MINER_WALLET_ADDRESS
+ExecStart=$CORE_GETH_Dir/geth --identity "$IDENTITY_NAME" --maxpeers 100 --classic --datadir $CORE_GETH_DATA_Dir --ethash.dagdir $CORE_GETH_DAG_Dir --http --http.addr 0.0.0.0 --http.port 8545 --http.api eth,web3,net,miner,txpool --syncmode full --mine --miner.threads=2 --miner.etherbase $ETC_MINER_WALLET_ADDRESS
 ExecStop=/bin/kill -TERM '$MAINPID'
 WorkingDirectory=$CORE_GETH_Dir
 StandardOutput=append:$CORE_GETH_LOG_Dir/core-geth.log
