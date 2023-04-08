@@ -85,6 +85,10 @@ sudo systemctl disable core-geth.service \
 && sudo rm -rf /etc/systemd/system/core-geth.service
 
 cat << EOF | sudo tee /etc/systemd/system/core-geth.service
+[Unit]
+Description=core-geth service
+After=network.target
+
 [Service]
 Type=simple
 User=root
