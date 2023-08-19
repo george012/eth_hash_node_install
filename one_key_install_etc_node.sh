@@ -10,6 +10,8 @@ CORE_GETH_Dir=/core-geth
 CORE_GETH_LOG_Dir=$CORE_GETH_Dir/logs
 CORE_GETH_DATA_Dir=$CORE_GETH_Dir/datas
 CORE_GETH_DAG_Dir=$CORE_GETH_DATA_Dir/dag
+CORE_GETH_CACHE_Dir=$CORE_GETH_DATA_Dir/cache
+API_PORT=8545
 
 parse_json(){
     echo "${1//\"/}" | tr -d '\n' | tr -d '\r' | sed "s/.*$2:\([^,}]*\).*/\1/"
@@ -94,7 +96,7 @@ Type=simple
 User=root
 Restart=on-failure
 RestartSec=5s
-ExecStart=$CORE_GETH_Dir/bin/geth --identity "$IDENTITY_NAME" --maxpeers 100 --classic --datadir $CORE_GETH_DATA_Dir --ethash.dagdir $CORE_GETH_DAG_Dir --http --http.addr 0.0.0.0 --http.port 8545 --http.api eth,web3,net,miner,txpool --syncmode full --mine --miner.threads=2 --miner.etherbase $ETC_MINER_WALLET_ADDRESS
+ExecStart=$CORE_GETH_Dir/bin/geth --identity "$IDENTITY_NAME" --maxpeers 100 --classic --datadir $CORE_GETH_DATA_Dir --ethash.dagdir $CORE_GETH_DAG_Dir --ethash.cachedir $CORE_GETH_CACHE_Dir--http --http.addr 0.0.0.0 --http.port $API_PORT --http.api eth,web3,net,miner,txpool --syncmode full --mine --miner.threads=2 --miner.etherbase $ETC_MINER_WALLET_ADDRESS
 ExecStop=/bin/kill -TERM '$MAINPID'
 WorkingDirectory=$CORE_GETH_Dir
 StandardOutput=append:$CORE_GETH_LOG_Dir/core-geth.log
@@ -200,10 +202,24 @@ add_path() {
 }
 
 setting_custom_node_id_name(){
-        echo "====Please enter the ETC id name===="
-        echo "============================ 请输入ETC自定义节点名称 ============================="
-        read -p "Please Input Custom ID Name(请输入自定义节点名称): " input_name
-        IDENTITY_NAME="$input_name"
+    echo "====Please enter the ETC id name===="
+    echo "============================ 请输入ETC自定义节点名称 ============================="
+    read -p "Please Input Custom ID Name(请输入自定义节点名称): " input_name
+    IDENTITY_NAME="$input_name"
+}
+
+setting_api_port(){
+    echo "====Please Input API Run As Port===="
+    echo "=========== 请输入API端口 default With 8545 ====================="
+    read -p "Please Input API Port,default With 8545(请输入端口，默认：8545，直接回车使用默认值): " input_port
+    # 如果输入在 1 到 65534 范围内，则使用输入的值
+    if [ "$input_port" -ge 1 ] && [ "$input_port" -le 65534 ]; then
+    API_PORT="$input_port"
+    else
+    echo "Invalid port number. Please enter a value between 1 and 65534."
+    echo "非1-65534端口，使用默认端口：8545"
+    # 可以在此处添加更多的错误处理逻辑
+    fi
 }
 
 echo "============================ ${produckName} ============================"
@@ -219,10 +235,10 @@ echo "======================================================================"
 read -p "$(echo -e "Plase Choose [1-7]：(请选择[1-7]：)")" choose
 case $choose in
 1)
-    pre_config && wait && download_latest_geth && wait  && input_wallet_address && wait && setting_custom_node_id_name && wait && create_geth_service && wait && handle_log_split && wait && add_path && wait && optimize_network && wait && rm -rf $SCRIPT_NAME
+    pre_config && wait && download_latest_geth && wait && input_wallet_address && wait && setting_api_port && wait && setting_custom_node_id_name && wait && create_geth_service && wait && handle_log_split && wait && add_path && wait && optimize_network && wait && rm -rf $SCRIPT_NAME
     ;;
 2)
-    pre_config && wait && download_latest_geth && wait && input_wallet_address && wait && create_geth_service
+    pre_config && wait && download_latest_geth && wait && input_wallet_address && wait && setting_api_port && wait && create_geth_service
     ;;
 3)
     pre_config && wait && download_latest_geth
