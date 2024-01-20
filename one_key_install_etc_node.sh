@@ -222,6 +222,12 @@ setting_api_port(){
     fi
 }
 
+function setting_ufw() {
+    echo "setting ufw starting"
+    ufw allow 33033/tcp && ufw allow 33033/udp && ufw allow 8551/tcp && ufw allow ${API_PORT}/tcp && ufw status
+    echo "setting ufw end"
+}
+
 echo "============================ ${produckName} ============================"
 echo "============== 执行此脚本会停止当前 core-geth服务，请谨慎操作 =============="
 echo "  1、Install core-geth、Create Config File、Create Systemctl Serveice、Optimize Network(安装core-geth、创建Systemctl服务、优化网络)"
@@ -235,7 +241,7 @@ echo "======================================================================"
 read -p "$(echo -e "Plase Choose [1-7]：(请选择[1-7]：)")" choose
 case $choose in
 1)
-    pre_config && wait && download_latest_geth && wait && input_wallet_address && wait && setting_api_port && wait && setting_custom_node_id_name && wait && create_geth_service && wait && handle_log_split && wait && add_path && wait && optimize_network && wait && rm -rf $SCRIPT_NAME
+    pre_config && wait && download_latest_geth && wait && input_wallet_address && wait && setting_api_port && wait && setting_custom_node_id_name && wait && create_geth_service && wait && handle_log_split && wait && add_path && wait && optimize_network && wait && setting_ufw && rm -rf $SCRIPT_NAME
     ;;
 2)
     pre_config && wait && download_latest_geth && wait && input_wallet_address && wait && setting_api_port && wait && create_geth_service
