@@ -10,13 +10,13 @@
 <!-- /TOC -->
 
 # 1. `summary`(简介)
-* This script is for one-click installation and configuration of Ethereum Classic (ETC) nodes on Linux systems. This script can help users easily install and configure ETC nodes, saving the trouble of manually executing multiple commands. Just run the script according to the prompts and select the corresponding operation to complete the construction of the ETC node
+* This script is used to install and configure Ethereum Classic (ETC) or Ethereum Pow algorithm nodes with one click on a Linux system. This script can help users easily install and configure ETC or eth Pow algorithm nodes, eliminating the trouble of manually executing multiple commands. Just run the script according to the prompts and select the corresponding operation to complete the construction of the ETC or eth Pow node.
 
-* `zh-CN--->`这个脚本是用于在Linux系统上一键安装和配置Ethereum Classic（ETC）节点的。这个脚本可以帮助用户轻松地安装和配置ETC节点，省去了手动执行多个命令的麻烦。只需根据提示运行脚本，选择相应的操作，即可完成ETC节点的搭建。
+* `zh-CN--->`这个脚本是用于在Linux系统上一键安装和配置Ethereum Classic（ETC）或者 Ethereum Pow算法 节点的。这个脚本可以帮助用户轻松地安装和配置ETC或者eth Pow类算法的节点，省去了手动执行多个命令的麻烦。只需根据提示运行脚本，选择相应的操作，即可完成ETC或者eth Pow节点的搭建。。
 
 # 2. `Q & A`(为什么？)
 * Q1: Why not use the official docker way(<font color=red>为什么不用官方docker方式？</font>)
-* A1: The docker method is cumbersome for running and monitoring, with limited energy, and not enough time to learn the docker ecology.（<font color=red>docker的方式对于运行监控繁琐，精力有限，对于docker生态的学习时间不够。</font>）
+* A1: The docker method is cumbersome for operation monitoring, has limited energy, and does not have enough time to learn the docker ecosystem. Prefer a pure Linux operating environment（<font color=red>docker的方式对于运行监控繁琐，精力有限，对于docker生态的学习时间不够。更喜欢纯净的Linux运行环境</font>）
 
 # 3. `Functions`(功能)
 - [x] Automatically download the latest version of core-geth(自动下载最新版本core-geth)
@@ -32,4 +32,4 @@
 * [core-geth Documentation](https://etclabscore.github.io/core-geth/)
 
 # 5. `Use`(使用)
-```wget --no-check-certificate https://raw.githubusercontent.com/george012/one_key_install_core-geth/master/one_key_install_etc_node.sh && chmod a+x ./one_key_install_etc_node.sh && ./one_key_install_etc_node.sh```
+```wget --no-check-certificate https://raw.githubusercontent.com/george012/eth_hash_node_install/master/eth_hash_node_install.sh && chmod a+x ./eth_hash_node_install.sh && ./eth_hash_node_install.sh```
