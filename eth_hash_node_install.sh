@@ -48,7 +48,7 @@ Description=Logrotate for geth
 
 [Service]
 Type=oneshot
-ExecStart=/usr/sbin/logrotate /etc/logrotate.d/geth
+ExecStart=/usr/sbin/logrotate /etc/logrotate.d/$COIN_NAME-geth
 EOF
 }
 
