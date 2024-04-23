@@ -172,16 +172,15 @@ function download_latest_geth(){
     file_name=`echo ${GETH_DOWNLOAD_URL##*'/'}`
     wget --no-check-certificate $GETH_DOWNLOAD_URL \
     && wait \
-    && echo "Download (下载): "$GETH_DOWNLOAD_URL"Complate (完成)",FielWith: $file_name
-    if [[ "$COIN" == "OCTA" ]]; then
-        mv "$file_name" "$GETH_Dir/geth"
-    else
-        unzip "$file_name" -d "$GETH_Dir"
-        chmod a+x $GETH_Dir/geth
-        $GETH_Dir/geth version
-    fi
-
-    rm -rf "$file_name"
+    && echo "Download (下载): "$GETH_DOWNLOAD_URL"Complate (完成)",FielWith: $file_name \
+    && if [[ "$COIN" == "OCTA" ]]; then
+            mv "$file_name" "$GETH_Dir/geth"
+        else
+            unzip "$file_name" -d "$GETH_Dir"
+            chmod a+x $GETH_Dir/geth
+            $GETH_Dir/geth version
+        fi \
+    && rm -rf "$file_name"
 }
 
 function pre_config(){
