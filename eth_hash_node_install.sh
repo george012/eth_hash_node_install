@@ -89,6 +89,10 @@ function set_execStart_value() {
         ExecStart="$GETH_Dir/bin/geth --identity \"$IDENTITY_NAME\" --maxpeers 100 --classic --datadir $GETH_DATA_Dir --ethash.dagdir $GETH_DATA_Dir --ethash.cachedir $GETH_CACHE_Dir --http --http.addr 0.0.0.0 --http.port $API_PORT --http.api eth,web3,net,miner,txpool --syncmode $NODE_TYPE --mine --miner.threads=2 --miner.etherbase $ETC_MINER_WALLET_ADDRESS"
     elif [[ "$COIN" == "ETHW" ]]; then
         ExecStart="$GETH_Dir/bin/geth --identity \"$IDENTITY_NAME\" --maxpeers 100 --datadir $GETH_DATA_Dir --ethash.dagdir $GETH_DAG_Dir --ethash.cachedir $GETH_CACHE_Dir --http --http.addr 0.0.0.0 --http.port $API_PORT --http.api eth,web3,net,miner,txpool --syncmode $NODE_TYPE --mine --miner.threads=2 --miner.etherbase $ETC_MINER_WALLET_ADDRESS"
+    elif [[ "$COIN" == "OCTA" ]]; then
+        ExecStart="$GETH_Dir/bin/geth --identity \"$IDENTITY_NAME\" --maxpeers 100 --datadir $GETH_DATA_Dir --ethash.dagdir $GETH_DAG_Dir --ethash.cachedir $GETH_CACHE_Dir --http --http.addr 0.0.0.0 --http.port $API_PORT --http.api eth,web3,net,miner,txpool --syncmode $NODE_TYPE --mine --miner.threads=2 --miner.etherbase $ETC_MINER_WALLET_ADDRESS"
+    elif [[ "$COIN" == "META" ]]; then
+        ExecStart="$GETH_Dir/bin/geth --identity \"$IDENTITY_NAME\" --maxpeers 100 --datadir $GETH_DATA_Dir --ethash.dagdir $GETH_DAG_Dir --ethash.cachedir $GETH_CACHE_Dir --http --http.addr 0.0.0.0 --http.port $API_PORT --http.api eth,web3,net,miner,txpool --syncmode $NODE_TYPE --mine --miner.threads=2 --miner.etherbase $ETC_MINER_WALLET_ADDRESS"
     fi
 }
 
@@ -135,15 +139,18 @@ function download_latest_geth(){
         local LATEST_RELEASE_INFO=$(curl --silent https://api.github.com/repos/etclabscore/core-geth/releases/latest)
     elif [[ "$COIN" == "ETHW" ]]; then
         local LATEST_RELEASE_INFO=$(curl --silent https://api.github.com/repos/ethereumpow/go-ethereum/releases/latest)
-    fi
+    elif [[ "$COIN" == "OCTA" ]]; then
+        local LATEST_RELEASE_INFO=$(curl --silent https://api.github.com/repos/octaspace/go-octa/releases/latest)
+    elif [[ "$COIN" == "META" ]]; then
+        local LATEST_RELEASE_INFO=$(curl --silent https://api.github.com/repos/MetachainOfficial/metachain-core/releases/latest)
     local GETH_VERSION=$(parse_json "$LATEST_RELEASE_INFO" "tag_name")
-
     # zh-CN---:筛选linux版本
     # en-US---:Filter linux version
+
     local DOWNLOAD_LINK_ARRAY=($(echo "$LATEST_RELEASE_INFO" | grep -oP '"browser_download_url": "\K(.*linux.*)(?=")'))
     local GETH_DOWNLOAD_URL=""
     for aurl in "${DOWNLOAD_LINK_ARRAY[@]}"; do
-        if [[ ! $aurl =~ \.sha256$ ]] && [[ ! $aurl =~ alltools ]]; then
+        if [[ ! $aurl =~ \.sha256$ ]] && [[ ! $aurl =~ alltools ]] && [[ ! $aurl =~ asc ]]; then
             GETH_DOWNLOAD_URL=$aurl
         fi
     done
@@ -165,17 +172,24 @@ function download_latest_geth(){
     file_name=`echo ${GETH_DOWNLOAD_URL##*'/'}`
     wget --no-check-certificate $GETH_DOWNLOAD_URL \
     && wait \
-    && echo "Download (下载): "$GETH_DOWNLOAD_URL"Complate (完成)",FielWith: $file_name \
-    && unzip "$file_name" -d "$GETH_Dir" \
-    && rm -rf "$file_name" \
-    && chmod a+x $GETH_Dir/geth \
-    && $GETH_Dir/geth version
+    && echo "Download (下载): "$GETH_DOWNLOAD_URL"Complate (完成)",FielWith: $file_name
+    if [[ "$COIN" == "OCTA" ]]; then
+        mv "$file_name" "$GETH_Dir/geth"
+    else
+        unzip "$file_name" -d "$GETH_Dir"
+        chmod a+x $GETH_Dir/geth
+        $GETH_Dir/geth version
+    fi
+        rm -rf "$file_name"
+        
+    
 }
 
 function pre_config(){
-    apt update && wait && apt install unzip zip wget logrotate
+    apt update && wait && apt install unzip zip tar wget logrotate net-tools vim
 }
 
+# 长度40 ETC地址，长度42 LTC地址，长度34 DOGE地址
 is_valid_etc_wallet_address() {
   local input_address="$1"
   if [[ "$input_address" =~ ^0x[a-fA-F0-9]{40}$ ]]; then
@@ -199,6 +213,7 @@ function input_wallet_address(){
         fi
     done
 }
+
 
 function add_path() {
     if [ ! -d "$GETH_Dir/bin" ]; then
@@ -229,12 +244,16 @@ function setting_ufw() {
         ufw allow 33033/tcp && ufw allow 33033/udp && ufw allow 8551/tcp  && ufw allow ${API_PORT}/tcp && ufw status
     elif [[ "$COIN" == "ETHW" ]]; then
         ufw allow 30303/tcp && ufw allow 30303/udp && ufw allow 8551/tcp  && ufw allow ${API_PORT}/tcp && ufw status
+    elif [[ "$COIN" == "OCTA" ]]; then
+        ufw allow 30303/tcp && ufw allow 30303/udp && ufw allow 8551/tcp  && ufw allow ${API_PORT}/tcp && ufw status
+    elif [[ "$COIN" == "META" ]]; then
+        ufw allow 30303/tcp && ufw allow 30303/udp && ufw allow 8551/tcp  && ufw allow ${API_PORT}/tcp && ufw status
     fi
 
     if [[ "$SERVER_TYPE" == "Esxi" ]]; then
-        sudo systemctl reload ufw
         sudo systemctl enable ufw
         sudo systemctl start ufw
+        sudo ufw enable
         sudo ufw status
     elif [[ "$SERVER_TYPE" == "Cloud" ]]; then
         sudo systemctl disable ufw
@@ -281,7 +300,7 @@ function welcome(){
         pre_config && wait && download_latest_geth && wait && input_wallet_address && wait && setting_api_port && wait && setting_custom_node_id_name && wait && set_execStart_value && create_geth_service && wait && handle_log_split && wait && add_path && wait && optimize_network && wait && setting_ufw && wait && rm  -rf $SCRIPT_NAME
         ;;
     2)
-        pre_config && wait && download_latest_geth && wait && input_wallet_address && wait && setting_api_port && wait && set_execStart_value && create_geth_service
+        pre_config && wait && download_latest_geth && wait && input_wallet_address && wait && setting_api_port && wait && set_execStart_value && wait  && create_geth_service
         ;;
     3)
         pre_config && wait && download_latest_geth
@@ -345,38 +364,39 @@ function run(){
     echo "====Please select build node coin (请选择搭建节点币种)===="
     echo "  1、Build ETC node (搭建ETC节点) "
     echo "  2、Build ETHW node (搭建ETHW节点) "
-    read -p "$(echo -e "Please Choose [1-2]: (请选择[1-2]: )")" choose
+    echo "  3、Build OCTA node (搭建OCTA节点) "
+    echo "  4、Build META node (搭建META节点) "
+    read -p "$(echo -e "Please Choose [1-4]: (请选择[1-4]: )")" choose
     case $choose in
     1)  
         COIN="ETC"
         COIN_NAME="etc"
-        PRODUCK_NAME="One Key Install $COIN Node"
-        GETH_Dir=/$COIN_NAME-geth
-        GETH_LOG_Dir=$GETH_Dir/logs
-        GETH_DATA_Dir=$GETH_Dir/datas
-        GETH_DAG_Dir=$GETH_DATA_Dir/dag
-        GETH_CACHE_Dir=$GETH_DATA_Dir/cache
-        select_node_type
-        welcome
-        echo "$COIN node server is successfully,start it using systemctl start $COIN_NAME-geth ($COIN 节点服务搭建成功,使用 systemctl start $COIN_NAME-geth 启动)"
         ;;
     2)
         COIN="ETHW"
         COIN_NAME="ethw"
-        PRODUCK_NAME="One Key Install $COIN Node"
-        GETH_Dir=/$COIN_NAME-geth
-        GETH_LOG_Dir=$GETH_Dir/logs
-        GETH_DATA_Dir=$GETH_Dir/datas
-        GETH_DAG_Dir=$GETH_DATA_Dir/dag
-        GETH_CACHE_Dir=$GETH_DATA_Dir/cache
-        select_node_type
-        welcome
-        echo "$COIN node server is successfully,start it using systemctl start $COIN_NAME-geth ($COIN 节点服务搭建成功,使用 systemctl start $COIN_NAME-geth 启动)"
+        ;;
+    3)
+        COIN="OCTA"
+        COIN_NAME="octa"
+        ;;
+    4)
+        COIN="META"
+        COIN_NAME="meta"
         ;;
     *)
         echo "Input Error,Please Again (输入错误,请重试)"
         ;;
     esac
+    PRODUCK_NAME="One Key Install $COIN Node"
+    GETH_Dir=/$COIN_NAME-geth
+    GETH_LOG_Dir=$GETH_Dir/logs
+    GETH_DATA_Dir=$GETH_Dir/datas
+    GETH_DAG_Dir=$GETH_DATA_Dir/dag
+    GETH_CACHE_Dir=$GETH_DATA_Dir/cache
+    select_node_type
+    welcome
+    echo "$COIN node server is successfully,start it using systemctl start $COIN_NAME-geth ($COIN 节点服务搭建成功,使用 systemctl start $COIN_NAME-geth 启动)"
 }
 
 run
