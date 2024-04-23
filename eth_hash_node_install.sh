@@ -180,7 +180,7 @@ function download_latest_geth(){
             chmod a+x $GETH_Dir/geth
             $GETH_Dir/geth version
         fi \
-    && rm -rf "$file_name"
+    && rm -rf $file_name
 }
 
 function pre_config(){
