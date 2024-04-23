@@ -143,6 +143,8 @@ function download_latest_geth(){
         local LATEST_RELEASE_INFO=$(curl --silent https://api.github.com/repos/octaspace/go-octa/releases/latest)
     elif [[ "$COIN" == "META" ]]; then
         local LATEST_RELEASE_INFO=$(curl --silent https://api.github.com/repos/MetachainOfficial/metachain-core/releases/latest)
+    fi
+    
     local GETH_VERSION=$(parse_json "$LATEST_RELEASE_INFO" "tag_name")
     # zh-CN---:筛选linux版本
     # en-US---:Filter linux version
@@ -172,15 +174,15 @@ function download_latest_geth(){
     file_name=`echo ${GETH_DOWNLOAD_URL##*'/'}`
     wget --no-check-certificate $GETH_DOWNLOAD_URL \
     && wait \
-    && echo "Download (下载): "$GETH_DOWNLOAD_URL"Complate (完成)",FielWith: $file_name \
-    && if [[ "$COIN" == "OCTA" ]]; then
-            mv "$file_name" "$GETH_Dir/geth"
-        else
-            unzip "$file_name" -d "$GETH_Dir"
-            chmod a+x $GETH_Dir/geth
-            $GETH_Dir/geth version
-        fi \
-    && rm -rf $file_name
+    && echo "Download (下载): "$GETH_DOWNLOAD_URL"Complate (完成)",FielWith: $file_name
+    if [[ "$COIN" == "OCTA" ]]; then
+        mv "$file_name" "$GETH_Dir/geth"
+    else
+        unzip "$file_name" -d "$GETH_Dir"
+        chmod a+x $GETH_Dir/geth
+        $GETH_Dir/geth version
+    fi
+    rm -rf $file_name
 }
 
 function pre_config(){
